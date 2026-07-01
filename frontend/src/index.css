@@ -341,6 +341,95 @@ a:hover {
   margin-left: 0.75rem;
 }
 
+/* Match stats panel */
+.match-stats-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.stats-team-headers {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.stats-vs {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stats-table th,
+.stats-table td {
+  padding: 0.65rem 0.75rem;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.stats-table th {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.stat-label {
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.stat-home, .stat-away {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.stat-events-row td {
+  font-size: 0.85rem;
+}
+
+.event-list {
+  list-style: none;
+  text-align: left;
+  margin: 0;
+  padding: 0;
+}
+
+.event-list li {
+  padding: 0.15rem 0;
+}
+
+.no-data {
+  color: var(--text-muted);
+}
+
+.stats-unavailable {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  background: var(--bg-hover);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.stats-unavailable ul {
+  margin: 0.5rem 0 0 1.25rem;
+}
+
+.stats-unavailable li {
+  margin: 0.2rem 0;
+}
+
 .match-meta {
   display: flex;
   gap: 1rem;

@@ -9,5 +9,8 @@ public record MatchDetailDto(
         List<PlayerDto> homeStarters,
         List<PlayerDto> homeBench,
         List<PlayerDto> awayStarters,
-        List<PlayerDto> awayBench
+        List<PlayerDto> awayBench,
+        TeamMatchStatsDto homeStats,
+        TeamMatchStatsDto awayStats,
+        List<String> unavailableStatistics
 ) {}

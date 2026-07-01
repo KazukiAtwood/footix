@@ -4,6 +4,7 @@ import tools.jackson.databind.JsonNode;
 import com.footix.backend.dto.MatchDto;
 import com.footix.backend.dto.MatchDetailDto;
 import com.footix.backend.dto.PlayerDto;
+import com.footix.backend.dto.TeamMatchStatsDto;
 import com.footix.backend.dto.StadiumDto;
 import org.springframework.stereotype.Service;
 
@@ -53,22 +54,49 @@ public class MatchService {
     }
 
     public Optional<MatchDetailDto> getMatchDetail(String id) {
-        return getMatchById(id).map(match -> {
-            String homeFormation = teamService.getFormation(match.homeTeamId()).orElse("4-3-3");
-            String awayFormation = teamService.getFormation(match.awayTeamId()).orElse("4-3-3");
+        if (id == null || !id.matches("\\d+")) return Optional.empty();
+        JsonNode rawGame = findRawGame(id);
+        if (rawGame == null) return Optional.empty();
 
-            var homeStarters = hasRealTeam(match.homeTeamId())
-                    ? teamService.getStarters(match.homeTeamId()) : List.<PlayerDto>of();
-            var homeBench = hasRealTeam(match.homeTeamId())
-                    ? teamService.getBench(match.homeTeamId()) : List.<PlayerDto>of();
-            var awayStarters = hasRealTeam(match.awayTeamId())
-                    ? teamService.getStarters(match.awayTeamId()) : List.<PlayerDto>of();
-            var awayBench = hasRealTeam(match.awayTeamId())
-                    ? teamService.getBench(match.awayTeamId()) : List.<PlayerDto>of();
+        MatchDto match = mapGame(rawGame);
+        String homeFormation = teamService.getFormation(match.homeTeamId()).orElse("4-3-3");
+        String awayFormation = teamService.getFormation(match.awayTeamId()).orElse("4-3-3");
 
-            return new MatchDetailDto(match, homeFormation, awayFormation,
-                    homeStarters, homeBench, awayStarters, awayBench);
-        });
+        var homeStarters = hasRealTeam(match.homeTeamId())
+                ? teamService.getStarters(match.homeTeamId()) : List.<PlayerDto>of();
+        var homeBench = hasRealTeam(match.homeTeamId())
+                ? teamService.getBench(match.homeTeamId()) : List.<PlayerDto>of();
+        var awayStarters = hasRealTeam(match.awayTeamId())
+                ? teamService.getStarters(match.awayTeamId()) : List.<PlayerDto>of();
+        var awayBench = hasRealTeam(match.awayTeamId())
+                ? teamService.getBench(match.awayTeamId()) : List.<PlayerDto>of();
+
+        TeamMatchStatsDto homeStats = MatchEventParser.buildTeamStats(match.homeTeamName(), rawGame, true);
+        TeamMatchStatsDto awayStats = MatchEventParser.buildTeamStats(match.awayTeamName(), rawGame, false);
+
+        return Optional.of(new MatchDetailDto(match, homeFormation, awayFormation,
+                homeStarters, homeBench, awayStarters, awayBench,
+                homeStats, awayStats, unavailableStatistics()));
+    }
+
+    private JsonNode findRawGame(String id) {
+        JsonNode response = apiClient.get("/get/games");
+        if (response == null || !response.has("games")) return null;
+        for (JsonNode g : response.get("games")) {
+            if (id.equals(g.path("id").asText())) return g;
+        }
+        return null;
+    }
+
+    private static List<String> unavailableStatistics() {
+        return List.of(
+                "Cartons jaunes / rouges",
+                "Tirs cadrés / non cadrés",
+                "Passes",
+                "Corners",
+                "Possession de balle",
+                "Coups francs"
+        );
     }
 
     private boolean hasRealTeam(String teamId) {

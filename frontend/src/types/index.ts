@@ -60,6 +60,26 @@ export interface MatchDetail {
   homeBench: Player[];
   awayStarters: Player[];
   awayBench: Player[];
+  homeStats: TeamMatchStats;
+  awayStats: TeamMatchStats;
+  unavailableStatistics: string[];
+}
+
+export interface MatchEvent {
+  type: string;
+  player: string;
+  minute: string;
+  label: string;
+}
+
+export interface TeamMatchStats {
+  teamName: string;
+  goals: number;
+  goalEvents: MatchEvent[];
+  penaltyShootoutScored: number;
+  penaltyShootoutMissed: number;
+  penaltyScorers: string[];
+  penaltyMisses: string[];
 }
 
 export interface Group {

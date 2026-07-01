@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../api/client';
 import { LineupSection } from '../components/PlayerCard';
+import { MatchStatsPanel } from '../components/MatchStatsPanel';
 import { useMatchStream } from '../hooks/useMatchStream';
 import type { MatchDetail } from '../types';
 import { formatScoreDisplay, getWinner, getWinnerName } from '../utils/matchResult';
@@ -35,6 +36,11 @@ export function MatchPage() {
 
   const streamed = useMatchStream(id, detail?.match ?? null);
   const match = streamed ?? detail?.match;
+
+  useEffect(() => {
+    if (!id || !match || loading) return;
+    api.getMatchDetail(id).then(setDetail).catch(() => {});
+  }, [id, match?.homeScore, match?.awayScore, match?.finished, loading]);
 
   const toggleFavorite = async () => {
     if (!id) return;
@@ -139,6 +145,14 @@ export function MatchPage() {
           </dl>
         </div>
       </div>
+
+      <MatchStatsPanel
+        home={detail.homeStats}
+        away={detail.awayStats}
+        homePenaltyScore={match.homePenaltyScore}
+        awayPenaltyScore={match.awayPenaltyScore}
+        unavailableStatistics={detail.unavailableStatistics}
+      />
 
       <section className="section lineups">
         <h2>Compositions</h2>
